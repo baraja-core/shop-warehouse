@@ -39,7 +39,8 @@ final class WarehouseExtension extends CompilerExtension
 		/** @var ServiceDefinition $pluginManager */
 		$pluginManager = $this->getContainerBuilder()->getDefinitionByType(PluginManager::class);
 		$pluginManager->addSetup(
-			'?->addComponent(?)', ['@self', [
+			'?->addComponent(?)',
+			['@self', [
 				'key' => 'warehouseDefault',
 				'name' => 'cms-warehouse-default',
 				'implements' => WarehousePlugin::class,
@@ -49,10 +50,11 @@ final class WarehouseExtension extends CompilerExtension
 				'position' => 100,
 				'tab' => 'Warehouse',
 				'params' => [],
-			]]
+			]],
 		);
 		$pluginManager->addSetup(
-			'?->addComponent(?)', ['@self', [
+			'?->addComponent(?)',
+			['@self', [
 				'key' => 'warehouseOverview',
 				'name' => 'cms-warehouse-overview',
 				'implements' => WarehousePlugin::class,
@@ -62,7 +64,7 @@ final class WarehouseExtension extends CompilerExtension
 				'position' => 100,
 				'tab' => 'Overview',
 				'params' => ['id'],
-			]]
+			]],
 		);
 	}
 }

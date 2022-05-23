@@ -32,7 +32,7 @@ final class CmsWarehouseEndpoint extends BaseEndpoint
 		$this->sendJson(
 			[
 				'warehouses' => $warehouses,
-			]
+			],
 		);
 	}
 
@@ -51,7 +51,7 @@ final class CmsWarehouseEndpoint extends BaseEndpoint
 				'location' => $warehouse->getLocation(),
 				'longitude' => $warehouse->getLongitude(),
 				'latitude' => $warehouse->getLatitude(),
-			]
+			],
 		);
 	}
 

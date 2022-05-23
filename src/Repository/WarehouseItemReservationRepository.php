@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Repository;
 
 
-use Baraja\Shop\Warehouse\Entity\WarehouseCapacity;
 use Baraja\Shop\Warehouse\Entity\WarehouseItem;
 use Baraja\Shop\Warehouse\Entity\WarehouseItemReservation;
 use Doctrine\ORM\EntityRepository;

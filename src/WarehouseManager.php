@@ -237,7 +237,9 @@ final class WarehouseManager
 			);
 		}
 
-		$capacities = $fullMatchingCapacity !== null ? [$fullMatchingCapacity] : $availableCapacities;
+		$capacities = $fullMatchingCapacity !== null
+			? [$fullMatchingCapacity]
+			: $availableCapacities;
 
 		foreach ($capacities as $realCapacity) {
 			if ($quantity <= 0) {
