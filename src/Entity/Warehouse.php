@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
-use Baraja\Doctrine\Identifier\IdentifierUnsigned;
 use Baraja\Localization\TranslateObject;
 use Baraja\Localization\Translation;
+use Baraja\Shop\Warehouse\Repository\WarehouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
@@ -20,12 +20,16 @@ use Nette\Utils\Strings;
  * @method Translation|null getDescription(?string $locale = null)
  * @method void setDescription(?string $description, ?string $locale = null)
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: WarehouseRepository::class)]
 #[ORM\Table(name: 'shop__warehouse')]
 class Warehouse
 {
-	use IdentifierUnsigned;
 	use TranslateObject;
+
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
+	#[ORM\GeneratedValue]
+	protected int $id;
 
 	#[ORM\Column(type: 'translate')]
 	private Translation $name;
@@ -43,6 +47,9 @@ class Warehouse
 	private ?float $longitude = null;
 
 	#[ORM\Column(type: 'boolean')]
+	private bool $main = false;
+
+	#[ORM\Column(type: 'boolean')]
 	private bool $quantityCanBeNegative = false;
 
 	#[ORM\Column(type: 'integer')]
@@ -56,6 +63,12 @@ class Warehouse
 			throw new \InvalidArgumentException('Warehouse name can not be empty.');
 		}
 		$this->setName($name);
+	}
+
+
+	public function getId(): int
+	{
+		return $this->id;
 	}
 
 
@@ -95,6 +108,18 @@ class Warehouse
 	public function setLongitude(?float $longitude): void
 	{
 		$this->longitude = $longitude;
+	}
+
+
+	public function isMain(): bool
+	{
+		return $this->main;
+	}
+
+
+	public function setMain(bool $main): void
+	{
+		$this->main = $main;
 	}
 
 

@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
-use Baraja\Doctrine\Identifier\IdentifierUnsigned;
+use Baraja\Shop\Warehouse\Repository\WarehouseCapacityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\UniqueConstraint(name: 'shop__warehouse_capacity_warehouse_item', columns: ['warehouse_id', 'item_id'])]
+#[ORM\Entity(repositoryClass: WarehouseCapacityRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_capacity')]
 class WarehouseCapacity
 {
-	use IdentifierUnsigned;
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
+	#[ORM\GeneratedValue]
+	protected int $id;
 
 	#[ORM\ManyToOne(targetEntity: Warehouse::class)]
 	private Warehouse $warehouse;
@@ -21,7 +25,10 @@ class WarehouseCapacity
 	private WarehouseItem $item;
 
 	#[ORM\Column(type: 'integer')]
-	private int $quantity;
+	private int $quantity = 0;
+
+	#[ORM\Column(type: 'string', length: 32, nullable: true)]
+	private ?string $location = null;
 
 	#[ORM\Column(type: 'datetime')]
 	private \DateTimeInterface $updatedDate;
@@ -32,6 +39,12 @@ class WarehouseCapacity
 		$this->warehouse = $warehouse;
 		$this->item = $item;
 		$this->setQuantity($quantity);
+	}
+
+
+	public function getId(): int
+	{
+		return $this->id;
 	}
 
 
@@ -65,6 +78,18 @@ class WarehouseCapacity
 	public function addQuantity(int $quantity): void
 	{
 		$this->setQuantity($this->quantity + $quantity);
+	}
+
+
+	public function getLocation(): ?string
+	{
+		return $this->location;
+	}
+
+
+	public function setLocation(?string $location): void
+	{
+		$this->location = $location;
 	}
 
 
