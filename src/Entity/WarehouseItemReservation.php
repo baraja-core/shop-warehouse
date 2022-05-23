@@ -8,6 +8,7 @@ namespace Baraja\Shop\Warehouse\Entity;
 use Baraja\Shop\Warehouse\Repository\WarehouseItemReservationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\UniqueConstraint(columns: ['reference_hash', 'capacity_id'])]
 #[ORM\Entity(repositoryClass: WarehouseItemReservationRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_item_reservation')]
 class WarehouseItemReservation
@@ -20,7 +21,7 @@ class WarehouseItemReservation
 	#[ORM\ManyToOne(targetEntity: WarehouseCapacity::class)]
 	private WarehouseCapacity $capacity;
 
-	#[ORM\Column(type: 'string', length: 32, unique: true, nullable: true)]
+	#[ORM\Column(type: 'string', length: 32, nullable: true)]
 	private ?string $referenceHash;
 
 	#[ORM\Column(type: 'integer')]

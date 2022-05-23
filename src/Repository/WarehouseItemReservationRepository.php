@@ -8,25 +8,22 @@ namespace Baraja\Shop\Warehouse\Repository;
 use Baraja\Shop\Warehouse\Entity\WarehouseItem;
 use Baraja\Shop\Warehouse\Entity\WarehouseItemReservation;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 
 final class WarehouseItemReservationRepository extends EntityRepository
 {
 	/**
-	 * @throws NoResultException|NonUniqueResultException
+	 * @return array<int, WarehouseItemReservation>
 	 */
-	public function getByHash(string $hash): WarehouseItemReservation
+	public function getByHash(string $hash): array
 	{
-		$reservation = $this->createQueryBuilder('r')
+		/** @var array<int, WarehouseItemReservation> $reservations */
+		$reservations = $this->createQueryBuilder('r')
 			->where('r.referenceHash = :hash')
 			->setParameter('hash', $hash)
-			->setMaxResults(1)
 			->getQuery()
-			->getSingleResult();
-		assert($reservation instanceof WarehouseItemReservation);
+			->getResult();
 
-		return $reservation;
+		return $reservations;
 	}
 
 

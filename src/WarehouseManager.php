@@ -264,28 +264,28 @@ final class WarehouseManager
 
 	public function clearCapacityReservationByHash(string $hash): void
 	{
-		try {
-			$reservation = $this->itemReservationRepository->getByHash($hash);
+		foreach ($this->itemReservationRepository->getByHash($hash) as $reservation) {
 			$this->entityManager->remove($reservation);
-		} catch (NoResultException|NonUniqueResultException) {
-			// reservation does not exist or is expired.
 		}
 	}
 
 
 	public function changeCapacity(
-		ProductInterface|ProductVariantInterface|WarehouseItem|string $item,
+		ProductInterface|ProductVariantInterface|WarehouseItem|WarehouseCapacity|string $item,
 		int $quantity,
 		?Warehouse $warehouse = null,
 	): void {
-		$warehouse ??= $this->getMainWarehouse();
-		$warehouseItem = $this->getWarehouseItem($item);
-
-		try {
-			$capacity = $this->getCapacity($warehouseItem, $warehouse);
-		} catch (NoResultException|NonUniqueResultException) {
-			$capacity = new WarehouseCapacity($warehouse, $warehouseItem, $quantity);
-			$this->entityManager->persist($capacity);
+		if ($item instanceof WarehouseCapacity) {
+			$capacity = $item;
+		} else {
+			$warehouse ??= $this->getMainWarehouse();
+			$warehouseItem = $this->getWarehouseItem($item);
+			try {
+				$capacity = $this->getCapacity($warehouseItem, $warehouse);
+			} catch (NoResultException|NonUniqueResultException) {
+				$capacity = new WarehouseCapacity($warehouse, $warehouseItem, $quantity);
+				$this->entityManager->persist($capacity);
+			}
 		}
 
 		$currentQuantity = $capacity->getQuantity();
@@ -298,12 +298,43 @@ final class WarehouseManager
 	}
 
 
+	public function transformReservationToChangeCapacity(WarehouseItemReservation|string $reservation): void
+	{
+		$reservations = is_string($reservation)
+			? $this->itemReservationRepository->getByHash($reservation)
+			: [$reservation];
+
+		foreach ($reservations as $reservationItem) {
+			$this->entityManager->remove($reservationItem);
+			$capacity = $reservation->getCapacity();
+			if ($capacity->getQuantity() < $reservationItem->getQuantity()) {
+				throw new \OutOfRangeException(
+					sprintf(
+						'Warehouse item is not available in selected capacity (id: %d). Capacity %d requested, but capacity %d is really available.',
+						$capacity->getId(),
+						$reservationItem->getQuantity(),
+						$capacity->getQuantity(),
+					),
+				);
+			}
+			$this->changeCapacity(
+				item: $capacity,
+				quantity: $capacity->getQuantity() - $reservationItem->getQuantity(),
+				warehouse: $capacity->getWarehouse(),
+			);
+		}
+		$this->entityManager->flush();
+	}
+
+
 	/**
-	 * Získá informace o reálné dostupnosti konkrétního produktu nebo varianty na základě záznamů ve všech skladech.
-	 * Reálná kapacita skladu ukazuje skutečný počet položek napříč sklady, který je snížen o počet rezervovaných kusů.
-	 * Všechna data se počítají v reálném čase.
-	 * Při objednávce více kusů se může stát, že bude položka dostupná ve více skladech a bude potřeba objednávku
-	 * nejprve synchronizovat.
+	 * This function gets information about the actual availability of a specific product
+	 * or variant based on the records in all warehouses.
+	 * Real warehouse capacity shows the actual number of items across warehouses,
+	 * which is reduced by the number of reserved items.
+	 * All data is calculated in real time.
+	 * When ordering multiple items, it may happen that an item is available in multiple
+	 * warehouses and the order will need to be synchronized first.
 	 *
 	 * @return array<int, ItemAvailabilityInfo>
 	 */

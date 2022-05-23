@@ -7,6 +7,7 @@ namespace Baraja\Shop\Warehouse\Bridge;
 
 use Baraja\EcommerceStandard\DTO\OrderInterface;
 use Baraja\EcommerceStandard\DTO\OrderItemInterface;
+use Baraja\Lock\Lock;
 use Baraja\Shop\Warehouse\WarehouseManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -41,12 +42,14 @@ final class OrderWarehouseBridge
 
 	public function onPayOrder(OrderInterface $order): void
 	{
+		Lock::startTransaction('warehouse-order');
 		foreach ($order->getItems() as $orderItem) {
-			$this->warehouseManager->clearCapacityReservationByHash(
+			$this->warehouseManager->transformReservationToChangeCapacity(
 				$this->resolveCapacityHash($order, $orderItem),
 			);
 		}
 		$this->entityManager->flush();
+		Lock::stopTransaction('warehouse-order');
 	}
 
 

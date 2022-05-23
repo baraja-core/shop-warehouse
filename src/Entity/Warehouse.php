@@ -11,15 +11,13 @@ use Baraja\Shop\Warehouse\Repository\WarehouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
-// use Doctrine\Common\Collections\ArrayCollection;
-// use Doctrine\Common\Collections\Collection;
-
 /**
  * @method Translation getName(?string $locale = null)
  * @method void setName(string $name, ?string $locale = null)
  * @method Translation|null getDescription(?string $locale = null)
  * @method void setDescription(?string $description, ?string $locale = null)
  */
+#[ORM\Index(columns: ['main'])]
 #[ORM\Entity(repositoryClass: WarehouseRepository::class)]
 #[ORM\Table(name: 'shop__warehouse')]
 class Warehouse
