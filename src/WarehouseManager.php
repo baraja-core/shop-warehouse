@@ -10,6 +10,8 @@ use Baraja\EcommerceStandard\DTO\ProductInterface;
 use Baraja\EcommerceStandard\DTO\ProductVariantInterface;
 use Baraja\Geocoder\GeocoderAccessor;
 use Baraja\Lock\Lock;
+use Baraja\Shop\Product\Entity\Product;
+use Baraja\Shop\Product\Entity\ProductVariant;
 use Baraja\Shop\Warehouse\DTO\ItemAvailabilityInfo;
 use Baraja\Shop\Warehouse\Entity\Warehouse;
 use Baraja\Shop\Warehouse\Entity\WarehouseCapacity;
@@ -127,8 +129,8 @@ final class WarehouseManager
 
 		$return = new WarehouseItem(
 			name: $name,
-			product: $product,
-			productVariant: $productVariant,
+			product: $product instanceof Product ? $product : null,
+			productVariant: $productVariant instanceof ProductVariant ? $productVariant : null,
 		);
 		$this->entityManager->persist($return);
 		$this->entityManager->flush();

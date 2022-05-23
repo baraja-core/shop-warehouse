@@ -33,14 +33,14 @@ class WarehouseItem
 	#[ORM\GeneratedValue]
 	protected int $id;
 
+	#[ORM\Column(type: 'translate', nullable: true)]
+	protected Translation $name;
+
 	#[ORM\ManyToOne(targetEntity: Product::class)]
 	private ?Product $product;
 
 	#[ORM\ManyToOne(targetEntity: ProductVariant::class)]
 	private ?ProductVariant $productVariant;
-
-	#[ORM\Column(type: 'translate', nullable: true)]
-	private Translation $name;
 
 	#[ORM\Column(type: 'string', unique: true, nullable: true)]
 	private ?string $sku = null;

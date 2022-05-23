@@ -17,4 +17,22 @@ final class ItemAvailabilityInfo
 		private WarehouseCapacity $warehouseCapacity,
 	) {
 	}
+
+
+	public function getWarehouse(): Warehouse
+	{
+		return $this->warehouse;
+	}
+
+
+	public function getWarehouseItem(): WarehouseItem
+	{
+		return $this->warehouseItem;
+	}
+
+
+	public function getWarehouseCapacity(): WarehouseCapacity
+	{
+		return $this->warehouseCapacity;
+	}
 }

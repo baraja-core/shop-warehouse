@@ -32,10 +32,10 @@ class Warehouse
 	protected int $id;
 
 	#[ORM\Column(type: 'translate')]
-	private Translation $name;
+	protected Translation $name;
 
 	#[ORM\Column(type: 'translate', nullable: true)]
-	private ?Translation $description = null;
+	protected ?Translation $description = null;
 
 	#[ORM\Column(type: 'string', nullable: true)]
 	private ?string $location = null;
