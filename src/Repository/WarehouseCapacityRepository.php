@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Repository;
 
 
-use Baraja\Shop\Warehouse\Entity\Warehouse;
+use Baraja\EcommerceStandard\DTO\WarehouseInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseItemInterface;
 use Baraja\Shop\Warehouse\Entity\WarehouseCapacity;
-use Baraja\Shop\Warehouse\Entity\WarehouseItem;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -19,8 +19,8 @@ final class WarehouseCapacityRepository extends EntityRepository
 	 * @throws NoResultException|NonUniqueResultException
 	 */
 	public function findItem(
-		WarehouseItem $warehouseItem,
-		?Warehouse $warehouse = null,
+		WarehouseItemInterface $warehouseItem,
+		?WarehouseInterface $warehouse = null,
 	): WarehouseCapacity {
 		$qb = $this->getBasicQuery($warehouseItem);
 		if ($warehouse !== null) {
@@ -38,7 +38,7 @@ final class WarehouseCapacityRepository extends EntityRepository
 	/**
 	 * @return array<int, WarehouseCapacity>
 	 */
-	public function findItems(WarehouseItem $warehouseItem): array
+	public function findItems(WarehouseItemInterface $warehouseItem): array
 	{
 		/** @var array<int, WarehouseCapacity> $return */
 		$return = $this->getBasicQuery($warehouseItem)
@@ -49,7 +49,7 @@ final class WarehouseCapacityRepository extends EntityRepository
 	}
 
 
-	private function getBasicQuery(WarehouseItem $warehouseItem): QueryBuilder
+	private function getBasicQuery(WarehouseItemInterface $warehouseItem): QueryBuilder
 	{
 		return $this->createQueryBuilder('wc')
 			->join('wc.warehouse', 'warehouse')

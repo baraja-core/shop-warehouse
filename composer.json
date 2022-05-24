@@ -16,6 +16,7 @@
 		"baraja-core/shop-product": "^1.0"
 	},
 	"require-dev": {
+		"baraja-core/shop-order": "^0.0",
 		"tracy/tracy": "^2.8",
 		"phpstan/phpstan": "^1.0",
 		"phpstan/extension-installer": "^1.1",

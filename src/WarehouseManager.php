@@ -107,7 +107,7 @@ final class WarehouseManager implements WarehouseManagerInterface
 	public function getWarehouseItem(
 		ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item,
 	): WarehouseItem {
-		if ($item instanceof WarehouseItem) {
+		if ($item instanceof WarehouseItemInterface) {
 			return $item;
 		}
 		try {
@@ -282,11 +282,12 @@ final class WarehouseManager implements WarehouseManagerInterface
 		int $quantity,
 		?WarehouseInterface $warehouse = null,
 	): void {
-		if ($item instanceof WarehouseCapacity) {
+		if ($item instanceof WarehouseCapacityInterface) {
 			$capacity = $item;
 		} else {
 			$warehouse ??= $this->getMainWarehouse();
 			$warehouseItem = $this->getWarehouseItem($item);
+			assert($warehouse instanceof Warehouse);
 			try {
 				$capacity = $this->getCapacity($warehouseItem, $warehouse);
 			} catch (NoResultException|NonUniqueResultException) {
@@ -313,7 +314,7 @@ final class WarehouseManager implements WarehouseManagerInterface
 
 		foreach ($reservations as $reservationItem) {
 			$this->entityManager->remove($reservationItem);
-			$capacity = $reservation->getCapacity();
+			$capacity = $reservationItem->getCapacity();
 			if ($capacity->getQuantity() < $reservationItem->getQuantity()) {
 				throw new \OutOfRangeException(
 					sprintf(
