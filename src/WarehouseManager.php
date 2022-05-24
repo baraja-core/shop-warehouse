@@ -108,6 +108,8 @@ final class WarehouseManager implements WarehouseManagerInterface
 		ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item,
 	): WarehouseItem {
 		if ($item instanceof WarehouseItemInterface) {
+			assert($item instanceof WarehouseItem);
+
 			return $item;
 		}
 		try {
@@ -299,7 +301,9 @@ final class WarehouseManager implements WarehouseManagerInterface
 		$currentQuantity = $capacity->getQuantity();
 		if ($currentQuantity !== $quantity) {
 			$capacity->setQuantity($quantity);
-			$this->entityManager->persist(new WarehouseMoveProtocol($capacity, $quantity));
+			if ($capacity instanceof WarehouseCapacity) {
+				$this->entityManager->persist(new WarehouseMoveProtocol($capacity, $quantity));
+			}
 		}
 
 		$this->entityManager->flush();
