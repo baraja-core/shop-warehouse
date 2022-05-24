@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
+use Baraja\EcommerceStandard\DTO\WarehouseInterface;
 use Baraja\Localization\TranslateObject;
 use Baraja\Localization\Translation;
 use Baraja\Shop\Warehouse\Repository\WarehouseRepository;
@@ -20,7 +21,7 @@ use Nette\Utils\Strings;
 #[ORM\Index(columns: ['main'])]
 #[ORM\Entity(repositoryClass: WarehouseRepository::class)]
 #[ORM\Table(name: 'shop__warehouse')]
-class Warehouse
+class Warehouse implements WarehouseInterface
 {
 	use TranslateObject;
 
@@ -67,6 +68,12 @@ class Warehouse
 	public function getId(): int
 	{
 		return $this->id;
+	}
+
+
+	public function getLabel(): string
+	{
+		return (string) $this->getName();
 	}
 
 

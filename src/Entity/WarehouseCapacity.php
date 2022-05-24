@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
+use Baraja\EcommerceStandard\DTO\OrderInterface;
+use Baraja\EcommerceStandard\DTO\OrderItemInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseCapacityInterface;
 use Baraja\Shop\Warehouse\Repository\WarehouseCapacityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\UniqueConstraint(name: 'shop__warehouse_capacity_warehouse_item', columns: ['warehouse_id', 'item_id'])]
 #[ORM\Entity(repositoryClass: WarehouseCapacityRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_capacity')]
-class WarehouseCapacity
+class WarehouseCapacity implements WarehouseCapacityInterface
 {
 	#[ORM\Id]
 	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
@@ -39,6 +42,12 @@ class WarehouseCapacity
 		$this->warehouse = $warehouse;
 		$this->item = $item;
 		$this->setQuantity($quantity);
+	}
+
+
+	public static function resolveOrderItemHash(OrderInterface $order, OrderItemInterface $item): string
+	{
+		return sprintf('oi_%d_%s', $item->getId(), substr($order->getHash(), 0, 12)); // oi = OrderItem
 	}
 
 

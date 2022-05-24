@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
+use Baraja\EcommerceStandard\DTO\WarehouseItemReservationInterface;
 use Baraja\Shop\Warehouse\Repository\WarehouseItemReservationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\UniqueConstraint(columns: ['reference_hash', 'capacity_id'])]
 #[ORM\Entity(repositoryClass: WarehouseItemReservationRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_item_reservation')]
-class WarehouseItemReservation
+class WarehouseItemReservation implements WarehouseItemReservationInterface
 {
 	#[ORM\Id]
 	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]

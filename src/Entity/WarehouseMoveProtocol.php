@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
+use Baraja\EcommerceStandard\DTO\WarehouseMoveProtocolInterface;
 use Baraja\Shop\Warehouse\Repository\WarehouseMoveProtocolRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: WarehouseMoveProtocolRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_move_protocol')]
-class WarehouseMoveProtocol
+class WarehouseMoveProtocol implements WarehouseMoveProtocolInterface
 {
 	#[ORM\Id]
 	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]

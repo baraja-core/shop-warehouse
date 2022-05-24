@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Shop\Warehouse\Entity;
 
 
+use Baraja\EcommerceStandard\DTO\ProductInterface;
+use Baraja\EcommerceStandard\DTO\ProductVariantInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseItemInterface;
 use Baraja\Localization\TranslateObject;
 use Baraja\Localization\Translation;
 use Baraja\Shop\Product\Entity\Product;
@@ -24,7 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity(repositoryClass: WarehouseItemRepository::class)]
 #[ORM\Table(name: 'shop__warehouse_item')]
-class WarehouseItem
+class WarehouseItem implements WarehouseItemInterface
 {
 	use TranslateObject;
 
@@ -91,8 +94,9 @@ class WarehouseItem
 	}
 
 
-	public function setProduct(?Product $product): void
+	public function setProduct(?ProductInterface $product): void
 	{
+		assert($product === null || $product instanceof Product);
 		$this->product = $product;
 	}
 
@@ -103,8 +107,9 @@ class WarehouseItem
 	}
 
 
-	public function setProductVariant(?ProductVariant $productVariant): void
+	public function setProductVariant(?ProductVariantInterface $productVariant): void
 	{
+		assert($productVariant === null || $productVariant instanceof ProductVariant);
 		$this->productVariant = $productVariant;
 	}
 

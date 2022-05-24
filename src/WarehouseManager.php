@@ -8,6 +8,11 @@ namespace Baraja\Shop\Warehouse;
 use Baraja\Doctrine\EntityManager;
 use Baraja\EcommerceStandard\DTO\ProductInterface;
 use Baraja\EcommerceStandard\DTO\ProductVariantInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseCapacityInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseItemInterface;
+use Baraja\EcommerceStandard\DTO\WarehouseItemReservationInterface;
+use Baraja\EcommerceStandard\Service\WarehouseManagerInterface;
 use Baraja\Geocoder\GeocoderAccessor;
 use Baraja\Lock\Lock;
 use Baraja\Shop\Product\Entity\Product;
@@ -25,7 +30,7 @@ use Baraja\Shop\Warehouse\Repository\WarehouseRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 
-final class WarehouseManager
+final class WarehouseManager implements WarehouseManagerInterface
 {
 	private WarehouseRepository $warehouseRepository;
 
@@ -99,8 +104,8 @@ final class WarehouseManager
 	}
 
 
-	public function getWarehouseItem(ProductInterface|ProductVariantInterface|WarehouseItem|string $item): WarehouseItem
-	{
+	public function getWarehouseItem(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item
+	): WarehouseItem {
 		if ($item instanceof WarehouseItem) {
 			return $item;
 		}
@@ -139,7 +144,7 @@ final class WarehouseManager
 	}
 
 
-	public function setLocation(Warehouse $warehouse, ?string $location): void
+	public function setLocation(WarehouseInterface $warehouse, ?string $location): void
 	{
 		if ($location !== null && $warehouse->getLocation() !== $location) {
 			$coordinates = $this->geocoderAccessor->get()->decode($location);
@@ -150,7 +155,7 @@ final class WarehouseManager
 	}
 
 
-	public function getRealCapacity(ProductInterface|ProductVariantInterface|WarehouseItem|string $item): int
+	public function getRealCapacity(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item): int
 	{
 		$total = $this->getTotalCapacity($item);
 		$reserved = $this->getReservedCapacity($item);
@@ -169,7 +174,7 @@ final class WarehouseManager
 	}
 
 
-	public function getTotalCapacity(ProductInterface|ProductVariantInterface|WarehouseItem|string $item): int
+	public function getTotalCapacity(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item): int
 	{
 		$warehouseItem = $this->getWarehouseItem($item);
 
@@ -182,8 +187,8 @@ final class WarehouseManager
 	}
 
 
-	public function getReservedCapacity(ProductInterface|ProductVariantInterface|WarehouseItem|string $item): int
-	{
+	public function getReservedCapacity(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item
+	): int {
 		$warehouseItem = $this->getWarehouseItem($item);
 
 		$return = 0;
@@ -198,14 +203,14 @@ final class WarehouseManager
 	/**
 	 * @throws NoResultException|NonUniqueResultException
 	 */
-	public function getCapacity(WarehouseItem $item, ?Warehouse $warehouse = null): WarehouseCapacity
+	public function getCapacity(WarehouseItemInterface $item, ?WarehouseInterface $warehouse = null): WarehouseCapacity
 	{
 		return $this->capacityRepository->findItem($item, $warehouse);
 	}
 
 
 	public function reserveCapacity(
-		ProductInterface|ProductVariantInterface|WarehouseItem|string $item,
+		ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item,
 		int $quantity,
 		?string $referenceHash = null,
 		?\DateTimeInterface $expirationDate = null,
@@ -271,9 +276,9 @@ final class WarehouseManager
 
 
 	public function changeCapacity(
-		ProductInterface|ProductVariantInterface|WarehouseItem|WarehouseCapacity|string $item,
+		ProductInterface|ProductVariantInterface|WarehouseItemInterface|WarehouseCapacityInterface|string $item,
 		int $quantity,
-		?Warehouse $warehouse = null,
+		?WarehouseInterface $warehouse = null,
 	): void {
 		if ($item instanceof WarehouseCapacity) {
 			$capacity = $item;
@@ -298,7 +303,7 @@ final class WarehouseManager
 	}
 
 
-	public function transformReservationToChangeCapacity(WarehouseItemReservation|string $reservation): void
+	public function transformReservationToChangeCapacity(WarehouseItemReservationInterface|string $reservation): void
 	{
 		$reservations = is_string($reservation)
 			? $this->itemReservationRepository->getByHash($reservation)
@@ -328,14 +333,6 @@ final class WarehouseManager
 
 
 	/**
-	 * This function gets information about the actual availability of a specific product
-	 * or variant based on the records in all warehouses.
-	 * Real warehouse capacity shows the actual number of items across warehouses,
-	 * which is reduced by the number of reserved items.
-	 * All data is calculated in real time.
-	 * When ordering multiple items, it may happen that an item is available in multiple
-	 * warehouses and the order will need to be synchronized first.
-	 *
 	 * @return array<int, ItemAvailabilityInfo>
 	 */
 	public function getItemAvailability(ProductInterface|ProductVariantInterface $item): array
