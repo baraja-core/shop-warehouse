@@ -104,7 +104,8 @@ final class WarehouseManager implements WarehouseManagerInterface
 	}
 
 
-	public function getWarehouseItem(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item
+	public function getWarehouseItem(
+		ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item,
 	): WarehouseItem {
 		if ($item instanceof WarehouseItem) {
 			return $item;
@@ -187,7 +188,8 @@ final class WarehouseManager implements WarehouseManagerInterface
 	}
 
 
-	public function getReservedCapacity(ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item
+	public function getReservedCapacity(
+		ProductInterface|ProductVariantInterface|WarehouseItemInterface|string $item,
 	): int {
 		$warehouseItem = $this->getWarehouseItem($item);
 
